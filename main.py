@@ -3,9 +3,11 @@ from pygame.locals import *
 
 DEBUG = ""
 
+
 def log(msg):
     global DEBUG
     DEBUG += str(msg)
+
 
 ############################################
 # SETTING UP THE GAME MECHANICS            #
@@ -15,34 +17,100 @@ def log(msg):
 #######################
 
 # INITALIZING THE BOARD
-BOARD = [
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-]
+BOARD = []
+
+
+def initBoard():
+    global BOARD
+    BOARD = [
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+    ]
+
+
+initBoard()
 
 
 # PIECES
 #######################
 
-class PieceT:
+class Piece:
+    shape = []
+    coord = [4, 0]
+    index = 0
+
+    def check(self):
+        shp = self.shape[self.index]
+        global BOARD
+        log("{} {} {} {}".format(self.coord[0], len(BOARD[0]) - len(shp) + 1, self.coord[1],
+                                 len(BOARD) - len(shp[0]) + 1))
+        if (
+                self.coord[0] < 0 or
+                self.coord[1] < 0 or
+                self.coord[0] > len(BOARD[0]) - len(shp) + 1 or
+                self.coord[1] > len(BOARD) - len(shp[0]) + 1
+        ):
+            return False
+        try:
+            for i in range(len(shp)):
+                for j in range(len(shp[0])):
+                    if BOARD[self.coord[1] + j][self.coord[0] + i] != '.' and shp[i][j] != '.':
+                        return False
+            return True
+        except:
+            log(" ERR001")
+            return False
+
+    def draw(self, tile, bpos):
+        print(self.shape)
+        print(self.index)
+        shp = self.shape[self.index]
+        global SCREEN
+        for i in range(len(shp)):
+            for j in range(len(shp[0])):
+                if (shp[i][j] != '.'):
+                    SCREEN.blit(tile, [bpos[0] + (self.coord[0] + i) * 24, bpos[1] + (self.coord[1] + j) * 24])
+
+    def add(self):
+        shp = self.shape[self.index]
+        global BOARD
+        for i in range(len(shp)):
+            for j in range(len(shp[0])):
+                if (shp[i][j] != '.'):
+                    BOARD[self.coord[1] + j][self.coord[0] + i] = shp[i][j]
+
+    def move(self, x, y, r):
+        self.coord[0] += x
+        self.coord[1] += y
+        self.index += r
+        self.index = self.index % len(self.shape)
+        if (not self.check()):
+            self.coord[0] -= x
+            self.coord[1] -= y
+            self.index -= r
+            return False
+        return True
+
+
+class PieceT(Piece):
     shape = [
         [
             ['K', 'K', 'K'],
@@ -61,60 +129,126 @@ class PieceT:
             ['.', 'K'],
             ['K', 'K'],
             ['.', 'K']
-        ],
+        ]
     ]
 
-    coord = [4, 0]
-    index = 0
 
-    def check(self):
-        shp = self.shape[self.index]
-        global BOARD
-        log("{} {} {} {}".format(self.coord[0], len(BOARD[0]) - len(shp) + 1, self.coord[1], len(BOARD) - len(shp[0]) + 1))
-        if (
-                self.coord[0] < 0  or
-                self.coord[1] < 0  or
-                self.coord[0] > len(BOARD[0]) - len(shp) + 1  or
-                self.coord[1] > len(BOARD) - len(shp[0]) + 1
-        ):
-            return False
-        try:
-            for i in range(len(shp)):
-                for j in range(len(shp[0])):
-                    if BOARD[self.coord[1] + j][self.coord[0] + i] != '.' and shp[i][j] != '.':
-                        return False
-            return True
-        except:
-            log(" ERR001")
-            return False
+class PieceS(Piece):
+    shape = [
+        [
+            ['.', 'L', 'L'],
+            ['L', 'L', '.']
+        ],
+        [
+            ['L', '.'],
+            ['L', 'L'],
+            ['.', 'L']
+        ]
+    ]
 
-    def draw(self, tile, bpos):
-        shp = self.shape[self.index]
-        global SCREEN
-        for i in range(len(shp)):
-            for j in range(len(shp[0])):
-                if (shp[i][j]!='.'):
-                    SCREEN.blit(tile, [bpos[0] + (self.coord[0] + i)*24, bpos[1] + (self.coord[1] + j)*24])
 
-    def add(self):
-        shp = self.shape[self.index]
-        global BOARD
-        for i in range(len(shp)):
-            for j in range(len(shp[0])):
-                if (shp[i][j]=='K'):
-                    BOARD[self.coord[1] + j][self.coord[0] + i] = shp[i][j]
+class PieceZ(Piece):
+    shape = [
+        [
+            ['P', 'P', '.'],
+            ['.', 'P', 'P']
+        ],
+        [
+            ['.', 'P'],
+            ['P', 'P'],
+            ['P', '.']
+        ]
+    ]
 
-    def move(self, x, y, r):
-        self.coord[0] += x
-        self.coord[1] += y
-        self.index += r
-        self.index = self.index % len(self.shape)
-        if (not self.check()):
-            self.coord[0] -= x
-            self.coord[1] -= y
-            self.index -= r
-            return False
-        return True
+
+class PieceQ(Piece):
+    shape = [
+        [
+            ['Y', 'Y'],
+            ['Y', 'Y']
+        ]
+    ]
+
+
+class PieceI(Piece):
+    shape = [
+        [
+            ['B', 'B', 'B', 'B']
+        ],
+        [
+            ['B'],
+            ['B'],
+            ['B'],
+            ['B']
+        ]
+    ]
+
+
+class PieceL(Piece):
+    shape = [
+        [
+            ['R', 'R', 'R'],
+            ['R', '.', '.']
+        ],
+        [
+            ['R', '.'],
+            ['R', '.'],
+            ['R', 'R']
+        ],
+        [
+            ['.', '.', 'R'],
+            ['R', 'R', 'R']
+        ],
+        [
+            ['R', 'R'],
+            ['.', 'R'],
+            ['.', 'R']
+        ]
+    ]
+
+
+class PieceG(Piece):
+    shape = [
+        [
+            ['G', 'G', 'G'],
+            ['.', '.', 'G']
+        ],
+        [
+            ['G', 'G'],
+            ['G', '.'],
+            ['G', '.']
+        ],
+        [
+            ['G', '.', '.'],
+            ['G', 'G', 'G']
+        ],
+        [
+            ['.', 'G'],
+            ['.', 'G'],
+            ['G', 'G']
+        ]
+    ]
+
+
+# new random piece
+def newPiece():
+    i = random.randint(0, 6)
+    if (i == 1):
+        rtn = PieceS()
+    elif (i == 2):
+        rtn = PieceZ()
+    elif (i == 3):
+        rtn = PieceT()
+    elif (i == 4):
+        rtn = PieceI()
+    elif (i == 5):
+        rtn = PieceL()
+    elif (i == 6):
+        rtn = PieceG()
+    else:
+        rtn = PieceQ()
+    rtn.index = random.randint(0, len(rtn.shape)-1)
+    return rtn
 
 
 ############################################
@@ -143,19 +277,19 @@ C_YELLOW = (255, 201, 14)
 C_WHITE = (255, 255, 255)
 
 # SETTING FONTS
-F_48 = pygame.font.Font("res/unifont.ttf", 48)
-F_36 = pygame.font.Font("res/unifont.ttf", 36)
-F_24 = pygame.font.Font("res/unifont.ttf", 24)
-F_12 = pygame.font.Font("res/unifont.ttf", 12)
-F_48B = pygame.font.Font("res/unifont.ttf", 48)
-F_36B = pygame.font.Font("res/unifont.ttf", 36)
-F_24B = pygame.font.Font("res/unifont.ttf", 24)
-F_12B = pygame.font.Font("res/unifont.ttf", 12)
+F_48 = pygame.font.Font("res/times.ttf", 48)
+F_36 = pygame.font.Font("res/times.ttf", 36)
+F_24 = pygame.font.Font("res/times.ttf", 24)
+F_12 = pygame.font.Font("res/times.ttf", 12)
+F_48B = pygame.font.Font("res/timesbd.ttf", 48)
+F_36B = pygame.font.Font("res/timesbd.ttf", 36)
+F_24B = pygame.font.Font("res/timesbd.ttf", 24)
+F_12B = pygame.font.Font("res/timesbd.ttf", 12)
 # setting bold versions of fonts
-F_48B.set_bold(True)
-F_36B.set_bold(True)
-F_24B.set_bold(True)
-F_12B.set_bold(True)
+#F_48B.set_bold(True)
+#F_36B.set_bold(True)
+#F_24B.set_bold(True)
+#F_12B.set_bold(True)
 
 # LOADING BLOCKS
 B_EMPTY = pygame.image.load("res/b-empty.png")
@@ -182,8 +316,8 @@ pygame.display.set_icon(pygame.image.load("res/icon.png"))
 def printBoard(pos):
     global BOARD, SCREEN
     inpos = [pos[0], pos[1]]
-    pygame.draw.rect(SCREEN,C_WHITE,pygame.Rect(pos[0]-2,pos[1]-2,244,484),1)
-    pygame.draw.rect(SCREEN,C_BLACK,pygame.Rect(pos[0]-1,pos[1]-1,242,482),1)
+    pygame.draw.rect(SCREEN, C_WHITE, pygame.Rect(pos[0] - 2, pos[1] - 2, 244, 484), 1)
+    pygame.draw.rect(SCREEN, C_BLACK, pygame.Rect(pos[0] - 1, pos[1] - 1, 242, 482), 1)
     for row in BOARD:
         pos[0] = inpos[0]
         for field in row:
@@ -213,31 +347,42 @@ def printBoard(pos):
 # THE GAME LOOP                            #
 ############################################
 
-pc = PieceT()
+def gameOver():
+    initBoard()
+
+
+pc = newPiece()
 
 step = 0
 
 while True:
-    DEBUG="S{:08} ".format(step)
-    x=0
-    y=0
-    r=0
+    DEBUG = "S{:08} ".format(step)
+    x = 0
+    y = 0
+    r = 0
     # for this not to actually be an infinite loop, we need to quit on pressing X
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                y+=1
+                y += 1
             if event.key == pygame.K_LEFT:
-                x-=1
+                x -= 1
             if event.key == pygame.K_RIGHT:
-                x+=1
+                x += 1
             if event.key == pygame.K_UP:
-                r=1
-        pc.move(x,y,r)
+                r = 1
+        pc.move(x, y, r)
 
-
+    for r in BOARD:
+        t = True
+        for f in r:
+            if (f=='.'):
+                t = False
+        if (t):
+            BOARD.remove(r)
+            BOARD.insert(0, ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'])
 
     # clearing the screen
     SCREEN.fill(C_BLACK)
@@ -250,15 +395,16 @@ while True:
     rndr = F_12.render(DEBUG, False, C_WHITE)
     SCREEN.blit(rndr, [0, 0])
 
-    if (step%5==0):
+    if (step % 5 == 0):
         if (not pc.move(0, 1, 0)):
             pc.add()
-            pc=PieceT()
+            pc = newPiece()
             pc.coord = [4, 0]
-
+            if (not pc.check()):
+                gameOver()
 
     pygame.time.wait(50)
 
     # sending display to buffer
     pygame.display.flip()
-    step+=1
+    step += 1
