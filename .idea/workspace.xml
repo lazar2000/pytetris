@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f32579fa-de46-43c6-9eee-665d4d2182aa" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/res/times.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/res/timesbd.ttf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/unifont.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/res/times.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/res/timesbd.ttf" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -83,7 +81,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1572099988321</updated>
-      <workItem from="1572099989715" duration="24460000" />
+      <workItem from="1572099989715" duration="27282000" />
+      <workItem from="1572255407243" duration="1675000" />
+      <workItem from="1572280034343" duration="1889000" />
+      <workItem from="1572316934264" duration="391000" />
     </task>
     <servers />
   </component>
@@ -95,7 +96,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -113,6 +116,6 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Tetris$main.coverage" NAME="main Coverage Results" MODIFIED="1572176589617" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Tetris$main.coverage" NAME="main Coverage Results" MODIFIED="1572317099265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

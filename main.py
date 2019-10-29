@@ -6,7 +6,7 @@ DEBUG = ""
 
 def log(msg):
     global DEBUG
-    DEBUG += str(msg)
+    #DEBUG += str(msg)
 
 
 ############################################
@@ -18,10 +18,11 @@ def log(msg):
 
 # INITALIZING THE BOARD
 BOARD = []
-
+SCORE = 0
 
 def initBoard():
-    global BOARD
+    global BOARD, SCORE
+    SCORE = 0
     BOARD = [
         ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
         ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
@@ -277,14 +278,14 @@ C_YELLOW = (255, 201, 14)
 C_WHITE = (255, 255, 255)
 
 # SETTING FONTS
-F_48 = pygame.font.Font("res/times.ttf", 48)
-F_36 = pygame.font.Font("res/times.ttf", 36)
-F_24 = pygame.font.Font("res/times.ttf", 24)
-F_12 = pygame.font.Font("res/times.ttf", 12)
-F_48B = pygame.font.Font("res/timesbd.ttf", 48)
-F_36B = pygame.font.Font("res/timesbd.ttf", 36)
-F_24B = pygame.font.Font("res/timesbd.ttf", 24)
-F_12B = pygame.font.Font("res/timesbd.ttf", 12)
+F_48 = pygame.font.Font("res/fontr.ttf", 48)
+F_36 = pygame.font.Font("res/fontr.ttf", 36)
+F_24 = pygame.font.Font("res/fontr.ttf", 24)
+F_12 = pygame.font.Font("res/fontr.ttf", 12)
+F_48B = pygame.font.Font("res/fontb.ttf", 48)
+F_36B = pygame.font.Font("res/fontb.ttf", 36)
+F_24B = pygame.font.Font("res/fontb.ttf", 24)
+F_12B = pygame.font.Font("res/fontb.ttf", 12)
 # setting bold versions of fonts
 #F_48B.set_bold(True)
 #F_36B.set_bold(True)
@@ -375,14 +376,29 @@ while True:
                 r = 1
         pc.move(x, y, r)
 
+    k=0
+
     for r in BOARD:
         t = True
         for f in r:
             if (f=='.'):
                 t = False
         if (t):
+            k += 1
             BOARD.remove(r)
             BOARD.insert(0, ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'])
+
+    SCORE += k*k*100
+
+    if (step % 5 == 0):
+        if (not pc.move(0, 1, 0)):
+            pc.add()
+            pc = newPiece()
+            pc.coord = [4, 0]
+            if (not pc.check()):
+                gameOver()
+            else:
+                SCORE+=10
 
     # clearing the screen
     SCREEN.fill(C_BLACK)
@@ -392,16 +408,13 @@ while True:
 
     pc.draw(B_NEW, BRD_POS)
 
+    scr = F_24B.render("Score: {:8}".format(SCORE), True, C_WHITE)
+    SCREEN.blit(scr, [288,20])
+    name = F_24B.render(" CS1102 Tetris ".format(SCORE), True, C_WHITE)
+    SCREEN.blit(name, [288, 550])
+
     rndr = F_12.render(DEBUG, False, C_WHITE)
     SCREEN.blit(rndr, [0, 0])
-
-    if (step % 5 == 0):
-        if (not pc.move(0, 1, 0)):
-            pc.add()
-            pc = newPiece()
-            pc.coord = [4, 0]
-            if (not pc.check()):
-                gameOver()
 
     pygame.time.wait(50)
 
