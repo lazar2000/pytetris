@@ -3,6 +3,8 @@ from pygame.locals import *
 
 DEBUG = ""
 
+TEAM_INFO = []
+
 
 def log(msg):
     global DEBUG
@@ -19,35 +21,6 @@ def log(msg):
 # INITALIZING THE BOARD
 BOARD = []
 SCORE = 0
-
-def initBoard():
-    global BOARD, SCORE
-    SCORE = 0
-    BOARD = [
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-    ]
-
-
-initBoard()
 
 
 # PIECES
@@ -80,9 +53,7 @@ class Piece:
             log(" ERR001")
             return False
 
-    def draw(self, tile, bpos):
-        print(self.shape)
-        print(self.index)
+    def draw(self, tile: object, bpos: object) -> object:
         shp = self.shape[self.index]
         global SCREEN
         for i in range(len(shp)):
@@ -249,8 +220,52 @@ def newPiece():
     else:
         rtn = PieceQ()
     rtn.index = random.randint(0, len(rtn.shape)-1)
+    rtn.coord = [4, 0]
     return rtn
 
+
+PIECE = newPiece()
+
+
+def initBoard():
+    global BOARD, SCORE, PIECE, TEAM_INFO
+    PIECE = newPiece()
+    SCORE = 0
+    BOARD = [
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+    ]
+    TEAM_INFO = [
+        "CityU Hong Kong",
+        "Course CS1102",
+        "Lab 15 - Team 5",
+        "Members:",
+        " DIHN Khanh Ly",
+        " KAEWNUKULTORN Nuttachon",
+        " JELACA Aleksa",
+        " GALIC Lazar"
+    ]
+
+
+initBoard()
 
 ############################################
 # SETTING UP THE GRAPHICS                  #
@@ -293,7 +308,8 @@ F_12B = pygame.font.Font("res/fontb.ttf", 12)
 #F_12B.set_bold(True)
 
 # LOADING BLOCKS
-B_EMPTY = pygame.image.load("res/b-empty.png")
+B_GRAY = pygame.image.load("res/b-gray.png")
+B_OVER = pygame.image.load("res/b-over.png")
 B_NEW = pygame.image.load("res/b-new.png")
 B_RED = pygame.image.load("res/b-red.png")
 B_GREEN = pygame.image.load("res/b-green.png")
@@ -302,6 +318,8 @@ B_YELLOW = pygame.image.load("res/b-yellow.png")
 B_PURPLE = pygame.image.load("res/b-purple.png")
 B_PINK = pygame.image.load("res/b-pink.png")
 B_LIGHT = pygame.image.load("res/b-light.png")
+
+B_EMPTY = B_GRAY
 
 # SCREEN SETUP
 SIZE = WIDTH, HEIGHT = 800, 600
@@ -348,15 +366,66 @@ def printBoard(pos):
 # THE GAME LOOP                            #
 ############################################
 
+
+# rendering and related calculations go here
+def graphics():
+    global step
+    # clearing the screen
+    SCREEN.fill(C_BLACK)
+
+    # printing the board
+    printBoard(BRD_POS)
+
+    try:
+        PIECE.draw(B_NEW, BRD_POS)
+    except:
+        log("NO PIECE TO DRAW!")
+
+    scr = F_24B.render("Score: {:8}".format(SCORE), True, C_WHITE)
+    SCREEN.blit(scr, [288,20])
+    name = F_24B.render(" CS1102 Tetris ", True, C_WHITE)
+    SCREEN.blit(name, [288, 550])
+
+    #rndr = F_12.render(DEBUG, False, C_WHITE)
+    #SCREEN.blit(rndr, [0, 0])
+
+    for i in range(0,len(TEAM_INFO)):
+        s = TEAM_INFO[i]
+        font = F_12
+        if (s[0]!=' '):
+            font = F_12B
+        line = font.render(s, True, C_WHITE)
+        SCREEN.blit(line, [22, 20 + 12*i])
+
+    pygame.time.wait(50)
+
+    # sending display to buffer
+    pygame.display.flip()
+    step += 1
+
+
+# the game over menu - we don't have a detailed GUI (may change, probably not)
 def gameOver():
-    initBoard()
+    global PIECE, B_EMPTY
+    PIECE = None
+    TEAM_INFO.extend([" ", "Press ENTER to restart", "Press ESC to exit"])
+    B_EMPTY = B_OVER
+    graphics()
+    B_EMPTY = B_GRAY
+    press=False
+    while not press:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sys.exit()
+                if event.key == pygame.K_RETURN:
+                    initBoard()
+                    press=True
 
 
-pc = newPiece()
-
-step = 0
-
-while True:
+# the game logic - mechanics go here
+def mechanics():
+    global DEBUG, SCORE, PIECE
     DEBUG = "S{:08} ".format(step)
     x = 0
     y = 0
@@ -374,7 +443,7 @@ while True:
                 x += 1
             if event.key == pygame.K_UP:
                 r = 1
-        pc.move(x, y, r)
+        PIECE.move(x, y, r)
 
     k=0
 
@@ -391,33 +460,31 @@ while True:
     SCORE += k*k*100
 
     if (step % 5 == 0):
-        if (not pc.move(0, 1, 0)):
-            pc.add()
-            pc = newPiece()
-            pc.coord = [4, 0]
-            if (not pc.check()):
+        if (not PIECE.move(0, 1, 0)):
+            PIECE.add()
+            PIECE = newPiece()
+            PIECE.coord = [4, 0]
+            if (not PIECE.check()):
                 gameOver()
             else:
                 SCORE+=10
 
-    # clearing the screen
-    SCREEN.fill(C_BLACK)
 
-    # printing the board
-    printBoard(BRD_POS)
+step = 0
 
-    pc.draw(B_NEW, BRD_POS)
 
-    scr = F_24B.render("Score: {:8}".format(SCORE), True, C_WHITE)
-    SCREEN.blit(scr, [288,20])
-    name = F_24B.render(" CS1102 Tetris ".format(SCORE), True, C_WHITE)
-    SCREEN.blit(name, [288, 550])
+while True:
+    mechanics()
+    graphics()
 
-    rndr = F_12.render(DEBUG, False, C_WHITE)
-    SCREEN.blit(rndr, [0, 0])
+# scihub.io
+# libgen.is
+# allitebooks.com
 
-    pygame.time.wait(50)
+# Descr:  1 2 3 8
+# Code:   4 5 6 7
 
-    # sending display to buffer
-    pygame.display.flip()
-    step += 1
+# Aleksa: Stages of GameDev, Game mechanics
+# Lazar:  Drawing in 3D, Examples
+# Ryu:    History, Game loop
+# KayLee: Intro, Drawing in 2D
